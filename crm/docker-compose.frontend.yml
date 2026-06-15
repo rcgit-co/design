@@ -1,0 +1,30 @@
+# Отдельный фронтенд-контейнер (не зависит от compose бэкенда).
+# Все параметры настраиваются переменными окружения или файлом .env рядом.
+#
+#   FRONTEND_PORT    — внешний порт фронта (по умолчанию 8090)
+#   BACKEND_URL      — адрес шлюза бэкенда для прокси /api (по умолчанию http://nginx)
+#   BACKEND_NETWORK  — реальное имя docker-сети бэкенда (см. `docker network ls | grep crm`)
+#
+# Пример запуска со своим портом:
+#   FRONTEND_PORT=9100 docker compose -f docker-compose.frontend.yml up -d --build
+
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: crm-frontend:latest
+    container_name: crm_frontend
+    restart: unless-stopped
+    environment:
+      BACKEND_URL: ${BACKEND_URL:-http://nginx}
+      NGINX_ENVSUBST_FILTER: BACKEND_URL
+    ports:
+      - "${FRONTEND_PORT:-8090}:80"
+    networks:
+      - backend_net
+
+networks:
+  backend_net:
+    external: true
+    name: ${BACKEND_NETWORK:-backend_crm_crm_network}

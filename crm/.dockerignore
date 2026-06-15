@@ -1,0 +1,10 @@
+node_modules
+dist
+.git
+*.log
+.env
+.env.frontend.example
+docker-compose.frontend.yml
+DOCKER.md
+Dockerfile
+.dockerignore
